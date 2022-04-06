@@ -1,0 +1,7 @@
+.spoiler-content {
+    display:none;
+}
+
+.spoiler-content.visible {
+    display:inline;
+}
