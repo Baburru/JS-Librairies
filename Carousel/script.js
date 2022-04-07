@@ -13,7 +13,7 @@ class Carousel {
      * 
      * @param {HTMLElement} element 
      * @param {Object} options 
-     * @param {Object} options , slidesToScroll = Number of elements to scroll
+     * @param {Object} options , slidesToScroll = Number of elements to scroll (WARNING this have to be < than slidesVisible or bugs)
      * @param {Object} options , slideVisible = Number of elements visible on screen in same time
      * @param {Boolean} options , loop = If YES or NO when u are at end of items it goes back to start/end
      */
@@ -109,6 +109,7 @@ class Carousel {
      */
 
     goToItem(index) {
+        debugger
         /* If u try to go left on u are at start and loop activated it go to end */
         if (index < 0) {
             if (this.options.loop) {
@@ -137,10 +138,13 @@ class Carousel {
         if ((this.items.length - this.options.slidesVisible) < this.options.slidesToScroll && index != 0){
             index = this.items.length - this.slidesVisible
         }
-        if (this.currentItem + index + this.slidesToScroll > this.items.length) {
+        if (this.currentItem + this.slidesToScroll > this.items.length) {
             index = this.items.length - this.slidesVisible
         }
 
+        if (index + this.slidesToScroll >= this.items.length){
+            index = this.items.length - this.slidesVisible
+        }
         /* Apply transition */
         let translateX = index * -100 / this.items.length
         this.container.style.transform = 'translate3d(' + translateX + '%,0,0)'
@@ -210,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     new Carousel(document.querySelector('#carousel2'), {
         slidesVisible: 4,
-        slidesToScroll: 2,
+        slidesToScroll: 3,
         loop: true
     })
 
