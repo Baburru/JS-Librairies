@@ -8,3 +8,5 @@ Everybody can add his code if its in JS/HTML/css(/scss) , if the librairie does 
 The final objective of this repository is to have a centralized folder where u can find everything you need to make your website better.
 
 You have to put a README file in each project to explain how it works and how to implement it in the code.
+
+Thanks

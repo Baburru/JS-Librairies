@@ -90,3 +90,29 @@
 .carousel {
     overflow: hidden;
 }
+
+
+.carousel__pagination {
+    position : absolute;
+    left: 0;
+    background-color: #F2F2F2;
+    right: 0;
+    text-align: center;
+}
+
+.carousel__pagination__button {
+    background-color: white;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 0 3px;
+    box-shadow: 0 2px 5px #3232321a, 0 5px 15px #0000001a;
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+
+.carousel__pagination__button--active , .carousel__pagination__button:hover {
+    transform: scale(1.4);
+}

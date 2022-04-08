@@ -13,9 +13,12 @@ class Carousel {
      * 
      * @param {HTMLElement} element 
      * @param {Object} options 
-     * @param {Object} options , slidesToScroll = Number of elements to scroll (WARNING this have to be < than slidesVisible or bugs)
-     * @param {Object} options , slideVisible = Number of elements visible on screen in same time
-     * @param {Boolean} options , loop = If YES or NO when u are at end of items it goes back to start/end
+     * @param {Object} [options.slidesToScroll=1] , slidesToScroll = Number of elements to scroll (WARNING this have to be < than slidesVisible or bugs)
+     * @param {Object} [options.slidesVisible=1] , slideVisible = Number of elements visible on screen in same time
+     * @param {Boolean} [options.pagination=false] , pagination = If you want little dots to go directly to the slide you want 
+     * @param {Boolean} [options.loop=false] , loop = If YES or NO when u are at end of items it goes back to start/end !WARNING! => Do not use with infinite or bugs
+     * @param {Boolean} [options.navigation=true] , navigation = If YES or NO you want navigate in the slides by using buttons or keyboard's arrows
+     * @param {boolean} [options.infinite=false] , infinite = You can scroll as much as u want on a side and it never stop
      */
 
     constructor(element, options = {}) {
@@ -23,7 +26,10 @@ class Carousel {
         this.options = Object.assign({}, {
             slidesToScroll: 1,
             slidesVisible: 1,
-            loop: false
+            loop: false ,
+            pagination : false ,
+            navigation : true ,
+            infinite : false
         }, options)
         let children = [].slice.call(element.children)
         this.isMobile = false
@@ -37,23 +43,50 @@ class Carousel {
         this.items = children.map((child) => {
             let item = this.createDivWithClass('carousel__item')
             item.appendChild(child)
-            this.container.appendChild(item)
             return item
         })
+
+        if (this.options.infinite) {
+            this.offset = this.options.slidesVisible * 2 -1
+            this.items = [
+                ...this.items.slice(this.items.length - this.offset).map(item => item.cloneNode(true)),
+                ...this.items,
+                ...this.items.slice(0, this.offset).map(item => item.cloneNode(true))
+
+            ]
+                this.goToItem(this.offset, false)
+                window.setTimeout(() => {
+                    this.goToItem(offset + 1, false)
+                },)
+        }
+
+        this.items.forEach(item => this.container.appendChild(item))
+
         this.setStyle()
-        this.createNavigation()
-        this.moveCallbacks.forEach(cb => cb(0))
+        if (this.options.navigation) {
+            this.createNavigation()
+            this.root.addEventListener('keyup', (e) => {
+                if (e.key === 'ArrowRight' || e.key === 'Right') {
+                    this.next()
+                } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
+                    this.prev()
+                }
+            })
+            if (this.options.infinite) {
+                this.container.addEventListener('transitionend', this.resetInfinite.bind(this))
+            }
+        }
+
+        if (this.options.pagination) {
+            this.createPagination()
+        }
+
+        this.moveCallbacks.forEach(cb => cb(this.currentItem))
         this.onWindowResize()
 
 
         window.addEventListener('resize', this.onWindowResize.bind(this))
-        this.root.addEventListener('keyup', (e) => {
-            if (e.key === 'ArrowRight' || e.key === 'Right') {
-                this.next()
-            } else if (e.key === 'ArrowLeft' || e.key === 'Left') {
-                this.prev()
-            }
-        })
+
 
     }
 
@@ -95,6 +128,26 @@ class Carousel {
         })
     }
 
+    createPagination () { 
+        let pagination = this.createDivWithClass('carousel__pagination')
+        let buttons = []
+        this.root.appendChild(pagination)
+        debugger
+        for (let i = 0; i < this.items.length; i = i + this.options.slidesToScroll){
+            let button = this.createDivWithClass('carousel__pagination__button')
+            button.addEventListener('click', () => this.goToItem(i))
+            pagination.appendChild(button)
+            buttons.push(button)
+        }
+        this.onMove(index => {
+           let activeButton = buttons[ Math.floor(index / this.options.slidesToScroll) ]
+           if (activeButton) {
+               buttons.forEach(button => button.classList.remove('carousel__pagination__button--active'))
+               activeButton.classList.add('carousel__pagination__button--active')
+           }
+        })
+    }
+
     next() {
         this.goToItem(this.currentItem + this.slidesToScroll)
     }
@@ -106,10 +159,10 @@ class Carousel {
     /**
      * Move items to selected direction/distance
      * @param {number} index 
+     * @param {boolean} [animation = true ]  , If YES or NO you want an animation when u change item ...
      */
 
-    goToItem(index) {
-        debugger
+    goToItem(index, animation = true) {
         /* If u try to go left on u are at start and loop activated it go to end */
         if (index < 0) {
             if (this.options.loop) {
@@ -147,9 +200,28 @@ class Carousel {
         }
         /* Apply transition */
         let translateX = index * -100 / this.items.length
+        if (animation === false) {
+            this.container.style.transition = 'none'
+        }
         this.container.style.transform = 'translate3d(' + translateX + '%,0,0)'
+        this.container.offsetHeight // force repaint
+        if (animation === false) {
+            this.container.style.transition = ''
+        }
         this.currentItem = index
         this.moveCallbacks.forEach(cb => cb(index))
+    }
+
+    /**
+     * Déplace le containter pour donner l'impression d'un slide infini
+     */
+
+    resetInfinite () {
+        if (this.currentItem <= this.options.slidesToScroll) {
+            this.goToItem(this.currentItem + this.items.length -2 * this.offset, false)
+        } else if (this.currentItem >= this.items.length - this.offset) {
+            this.goToItem(this.currentItem - (this.items.length - 2 * this.offset), false)
+        }
     }
 
     /**
@@ -205,19 +277,35 @@ class Carousel {
  * Partie a copier/coller autant de fois que vous souhaitez creer de carousel et changer l'id du "Query Selector avec celui "
  */
 
-document.addEventListener('DOMContentLoaded', function () {
+
+
+
+let onReady = function() {
     new Carousel(document.querySelector('#carousel1'), {
         slidesVisible: 3,
-        slidesToScroll: 1,
-        loop: false
+        slidesToScroll: 1 ,     
     })
+
+
 
     new Carousel(document.querySelector('#carousel2'), {
         slidesVisible: 4,
         slidesToScroll: 3,
-        loop: true
+        loop:true ,
+        pagination: true
     })
 
-})
+    new Carousel(document.querySelector('#carousel3'), {
+        slidesVisible: 4,
+        slidesToScroll: 3,
+        infinite: true
+    })
+}
 
 
+
+if (document.readyState !== 'loading') {
+    onReady()
+}
+
+document.addEventListener('DOMContentLoaded', onReady) 
