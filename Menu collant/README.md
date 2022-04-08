@@ -1,4 +1,4 @@
-------------------------STICKY ELEMENT------------------------
+# STICKY ELEMENT
 
 
 This code make the div u want sticky (Even when you scroll she stay at the same place) it can be usefull for header or sidebars as in this exemple.

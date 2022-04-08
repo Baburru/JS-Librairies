@@ -1,4 +1,4 @@
------------------------------CAROUSEL-----------------------------
+# Carousel
 
 This librairies select en element of a div in ur code to select her as container for the carousel. The code will take each item of ur container to display them horizontaly with button to scroll right and left.
 

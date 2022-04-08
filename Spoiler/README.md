@@ -1,4 +1,4 @@
---------------------SPOILER--------------------
+# SPOILER
 
 This script create a button over a text wherever you want in your HTML.
 

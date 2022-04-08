@@ -1,4 +1,4 @@
-----------------------------------TABS----------------------------------
+# TABS
 
 
 Open the HTLM file in your browser to have an exemple of what the code is doing; A test 1000 times better than an explaination.
