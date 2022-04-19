@@ -1,0 +1,20 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+
+
+
+body {
+    height: 400vh;
+    background-color: black;
+}
+
+
+.neige {
+    position: relative;
+    width: 2px;
+    height: 2px;
+    background-color: rgb(0, 248, 50);
+}
