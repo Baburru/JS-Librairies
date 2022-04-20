@@ -1,9 +1,10 @@
 
 var i = 0
 var allCube = []
+var pos_y = []
+var st_y = []
 
-
-
+/* 
 var start_x = []
 var start_y = []
 
@@ -34,44 +35,45 @@ function tomber() {
 }
 
 tomber()
+ */
 
-/* function createCube() {
-    const cube = document.createElement("div")
-    cube.classList.add('cube_n' + i + '')
+
+
+while (i < 200) {
+    var cube = document.createElement("div")
+    cube.setAttribute("id",'cube' + i)
     cube.classList.add('neige')
+    cube.innerHTML = "|"
+    cube.style.opacity = Math.random()
+    cube.style.left = Math.round(Math.random() * window.innerWidth) + 'px'
+    pos_y[i]= Math.random() * window.innerHeight
+    st_y[i]=0.9 + Math.random()
+    cube.style.top = st_y + 'px'
     document.body.appendChild(cube)
-
-
-
     allCube.push(cube)
     i++
+}
 
-    let start = Date.now(); // remember start time
+falling()
 
-    let timer = setInterval(function () {
-        // how much time passed from the start?
-        let timePassed = Date.now() - start;
 
-        if (timePassed >= 2000) {
-            clearInterval(timer); // finish the animation after 2 seconds
-            cube.style.opacity = 0
-            return;
+
+
+
+
+function falling() {
+    debugger
+    for (let i =0; i < 200; i++) {
+        pos_y[i] += 7
+
+        if(pos_y[i] > window.innerHeight - 50){
+            pos_y[i]= 0
         }
 
-        // draw the animation at the moment timePassed
-        draw(timePassed);
-
-    }, 20);
-
-    // as timePassed goes from 0 to 2000
-    // left gets values from 0px to 400px
-    function draw(timePassed) {
-        cube.style.top = timePassed / 5 + 'px';
-        var math = Math.random()
-        console.log(math)
+        document.getElementById("cube" + i).style.top = pos_y[i] + 'px';
+        
     }
-} */
 
-
-
+    time = setTimeout("falling()", 10)
+}
 
